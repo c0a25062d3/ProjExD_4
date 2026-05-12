@@ -171,7 +171,7 @@ class Gravity(pg.sprite.Sprite):
     def __init__(self, life: int):
         super().__init__()
         self.image = pg.Surface((WIDTH, HEIGHT))
-        self.image.set_alpha(168)  # 半透明
+        self.image.set_alpha(128)  # 半透明
         pg.draw.rect(self.image, (0, 0, 0), (0, 0, WIDTH, HEIGHT))  # 黒い重力場
         self.rect = self.image.get_rect()
         self.life = life
@@ -222,7 +222,7 @@ def main():
         # ビームと敵機の衝突
         for emy in pg.sprite.groupcollide(emys, beams, True, True).keys():
             exps.add(Explosion(emy, 100))
-            score.value += 200
+            score.value += 10
             bird.change_img(6, screen)
 
         # ビームと爆弾の衝突
