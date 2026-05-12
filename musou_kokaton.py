@@ -189,6 +189,33 @@ class Gravity(pg.sprite.Sprite):
         self.life -= 1
         if self.life < 0:
             self.kill()
+class Shield(pg.sprite.Sprite):
+    """
+    防御壁に関するクラス
+    追加機能５に基づき実装
+    """
+    def __init__(self, bird: Bird, life: int):
+        super().__init__()
+        # 手順１：空のSurface生成（幅20, 高さ身長の2倍）
+        self.image = pg.Surface((20, bird.rect.height * 2))
+        # 手順２：青い矩形を描画
+        pg.draw.rect(self.image, (0, 0, 255), (0, 0, 20, bird.rect.height * 2))
+        self.image.set_colorkey((0, 0, 0)) 
+        # 手順３＆４：向き取得と角度計算
+        vx, vy = bird.dire
+        angle = math.degrees(math.atan2(-vy, vx))
+        # 手順５：回転
+        self.image = pg.transform.rotozoom(self.image, angle, 1.0)
+        self.rect = self.image.get_rect()
+        # 手順６：位置配置
+        self.rect.centerx = bird.rect.centerx + bird.rect.width * vx
+        self.rect.centery = bird.rect.centery + bird.rect.height * vy
+        self.life = life
+
+    def update(self):
+        self.life -= 1
+        if self.life < 0:
+            self.kill()
 
 
 def main():
@@ -203,6 +230,7 @@ def main():
     exps = pg.sprite.Group()
     emys = pg.sprite.Group()
     gravities = pg.sprite.Group()  # 重力場グループ
+    shields = pg.sprite.Group()  # 防御壁グループ
 
     tmr = 0
     clock = pg.time.Clock()
@@ -225,6 +253,11 @@ def main():
                 if event.key == pg.K_RETURN and score.value >= 200:
                     score.value -= 200
                     gravities.add(Gravity(50))  # 50フレーム持続
+        
+        # 防御壁発動判定
+        if key_lst[pg.K_s] and score.value >= 50 and len(shields) == 0:
+            score.value -= 50
+            shields.add(Shield(bird, 400))
 
         screen.blit(bg_img, [0, 0])
 
@@ -266,6 +299,20 @@ def main():
                 time.sleep(2)
                 return
 
+        for bomb in pg.sprite.groupcollide(bombs, beams, True, True).keys():
+            exps.add(Explosion(bomb, 50))
+            score.value += 1
+
+        # 防御壁と爆弾の衝突判定
+        pg.sprite.groupcollide(bombs, shields, True, False)
+
+        for bomb in pg.sprite.spritecollide(bird, bombs, True):
+            bird.change_img(8, screen)
+            score.update(screen)
+            pg.display.update()
+            time.sleep(2)
+            return
+        
         bird.update(key_lst, screen)
         beams.update()
         beams.draw(screen)
@@ -277,6 +324,8 @@ def main():
         exps.draw(screen)
         gravities.update()  # 重力場の更新
         gravities.draw(screen) # 重力場の描画
+        shields.update()
+        shields.draw(screen)
         score.update(screen)
         pg.display.update()
         tmr += 1
