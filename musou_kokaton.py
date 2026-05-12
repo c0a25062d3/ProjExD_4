@@ -194,7 +194,7 @@ class NeoBeam(Beam):
         step = 100 // (self.num - 1)
         
         # -50度から+50度まで、step刻みで角度を生成
-        for angle0 in range(-50, 51, step):
+        for angle0 in range(-50, 50,step):
             beams.append(Beam(self.bird, angle0))
 
         return beams
