@@ -74,7 +74,7 @@ class Bird(pg.sprite.Sprite):
         self.speed = 10
         self.state = "normal"
         self.hyper_life = -1
-        self.hyper_img = pg.transform.rotozoom(pg.image.load("muteki.png"), 0, 0.9)
+        self.hyper_img = pg.transform.rotozoom(pg.image.load("fig/muteki.png"), 0, 0.03)
 
     def change_img(self, num: int, screen: pg.Surface):
         """
@@ -104,7 +104,7 @@ class Bird(pg.sprite.Sprite):
             self.image = self.imgs[self.dire]
 
         if self.state == "hyper":
-            self.image = pg.transform.laplacian(self.hyper_img)
+            self.image = self.hyper_img
             self.hyper_life -= 1
             if self.hyper_life < 0:
                 self.state = "normal"
@@ -243,7 +243,7 @@ class Score:
     def __init__(self):
         self.font = pg.font.Font(None, 50)
         self.color = (0, 0, 255)
-        self.value = 0
+        self.value = 500
         self.image = self.font.render(f"Score: {self.value}", 0, self.color)
         self.rect = self.image.get_rect()
         self.rect.center = 100, HEIGHT-50
