@@ -74,6 +74,7 @@ class Bird(pg.sprite.Sprite):
         self.speed = 10
         self.state = "normal"
         self.hyper_life = -1
+        self.hyper_img = pg.transform.rotozoom(pg.image.load("muteki.png"), 0, 0.9)
 
     def change_img(self, num: int, screen: pg.Surface):
         """
@@ -101,13 +102,14 @@ class Bird(pg.sprite.Sprite):
         if not (sum_mv[0] == 0 and sum_mv[1] == 0):
             self.dire = tuple(sum_mv)
             self.image = self.imgs[self.dire]
-            
+
         if self.state == "hyper":
-            self.image = pg.transform.laplacian(self.image)
+            self.image = pg.transform.laplacian(self.hyper_img)
             self.hyper_life -= 1
             if self.hyper_life < 0:
                 self.state = "normal"
-                
+                self.image = self.imgs[self.dire]
+
         screen.blit(self.image, self.rect)
 
 
